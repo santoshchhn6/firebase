@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { app, database } from "../firebaseConfig";
-import { collection, addDoc} from "firebase/firestore";
+import { app, database } from "../../firebaseConfig";
+import { collection, addDoc, onSnapshot } from "firebase/firestore";
+import { useEffect, useState } from "react";
 
-function AddData() {
+function RealTimeUpdate() {
   const [data, setData] = useState({});
   const collectionRef = collection(database, "users");
 
@@ -10,7 +10,9 @@ function AddData() {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
   };
+
   const handleSubmit = () => {
+    console.log({ data });
     addDoc(collectionRef, {
       name: data.name,
       age: data.age,
@@ -20,9 +22,19 @@ function AddData() {
       .catch((e) => alert(e.message));
   };
 
+  const getData = () => {
+    onSnapshot(collectionRef, (data) => {
+      console.log(data.docs.map((item) => ({ ...item.data(), id: item.id })));
+    });
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <div className="App">
-      <h1>FireStore,Database (addDoc)</h1>
+      <h2>FireStore,Database (RealTime Update)</h2>
       <input
         onChange={handleInput}
         name="name"
@@ -41,12 +53,11 @@ function AddData() {
         placeholder="Email"
         type="email"
       />
-
       <button onClick={handleSubmit} type="submit">
-        Create New User
+        Add User
       </button>
     </div>
   );
 }
 
-export default AddData;
+export default RealTimeUpdate;

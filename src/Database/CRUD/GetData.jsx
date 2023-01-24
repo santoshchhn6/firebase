@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { app, database } from "../firebaseConfig";
+import { app, database } from "../../firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
 
 function GetData() {
